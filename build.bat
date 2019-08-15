@@ -1,7 +1,7 @@
 
 ::build angular UI
 
-cd "..\etailer-ui\src\main\frontend"
+cd "..\Nimbus-shopping-Cart-gopa\src\main\frontend"
 call npm install
 call npm run build
 echo "##################### UI build completed ##################################"
