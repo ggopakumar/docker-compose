@@ -1,0 +1,55 @@
+version: "3.7"
+
+services:
+    registry-server:
+        image: registry-ms
+        #env_file:
+        #    - web-variables.env
+        environment:
+            - REGISTRY_MS_IP=localhost
+            - REGISTRY_MS_PORT=7777
+        ports:
+            - "7777:7777"
+
+    product-microservice:
+        image: product-ms
+        environment:
+            - REGISTRY_MS_HOST=registry-server
+            - REGISTRY_MS_PORT=7777
+            - PRODUCT_MS_PORT=8081
+            - PRODUCT_MS_DB=product_ms_db
+            - PRODUCT_MS_APP_NAME=product-ms
+        ports:
+            - "8081:8081"
+        links:
+            - registry-server
+        depends_on:
+            - registry-server
+            
+    cart-microservice:
+        image: cart-ms
+        ports:
+            - "8082:8082"
+        environment:
+            - REGISTRY_MS_HOST=registry-server
+            - REGISTRY_MS_PORT=7777
+            - CART_MS_PORT=8082
+            - CART_MS_DB=cart_ms_db
+            - CART_MS_APP_NAME=cart-ms
+        depends_on:
+            - registry-server
+            - product-microservice
+        links:
+            - registry-server
+            
+    etailer-frontend:
+        image: etailer-ui
+        environment:
+            - ETAILER_UI_PORT=8080
+            - ETAILER_UI_APP_NAME=etailer-ui
+        ports:
+            - "8080:8080"
+        depends_on:
+            - registry-server
+            - product-microservice
+            - cart-microservice
